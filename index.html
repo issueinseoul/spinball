@@ -63,7 +63,7 @@
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
   }
   canvas { 
-    border: 3px solid #e8e0d0; 
+    border: 3px solid #c4b498; 
     border-radius: 12px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.06);
   }
@@ -114,7 +114,7 @@ const render = Render.create({
     width: width,
     height: height,
     wireframes: false,
-    background: '#f7f3ec',
+    background: '#e8dfd0',
     showVelocity: false
   }
 });
@@ -124,16 +124,16 @@ const runner = Runner.create();
 Runner.run(runner, engine);
 
 const walls = [
-  Bodies.rectangle(width/2, -8, width, 16, { isStatic: true, render: { fillStyle: '#e8e0d0' } }),
-  Bodies.rectangle(width/2, height+8, width, 16, { isStatic: true, label: 'drain', render: { fillStyle: '#d4cfc4' } }),
-  Bodies.rectangle(-8, height/2, 16, height, { isStatic: true, render: { fillStyle: '#e8e0d0' } }),
-  Bodies.rectangle(width+8, height/2, 16, height, { isStatic: true, render: { fillStyle: '#e8e0d0' } })
+  Bodies.rectangle(width/2, -8, width, 16, { isStatic: true, render: { fillStyle: '#c4b498' } }),
+  Bodies.rectangle(width/2, height+8, width, 16, { isStatic: true, label: 'drain', render: { fillStyle: '#a89880' } }),
+  Bodies.rectangle(-8, height/2, 16, height, { isStatic: true, render: { fillStyle: '#c4b498' } }),
+  Bodies.rectangle(width+8, height/2, 16, height, { isStatic: true, render: { fillStyle: '#c4b498' } })
 ];
 Composite.add(world, walls);
 
 Composite.add(world, [
-  Bodies.rectangle(40, height*0.45, 12, height*0.5, { isStatic: true, angle: 0.12, render: { fillStyle: '#f0ebe3' } }),
-  Bodies.rectangle(width-40, height*0.45, 12, height*0.5, { isStatic: true, angle: -0.12, render: { fillStyle: '#f0ebe3' } })
+  Bodies.rectangle(40, height*0.45, 12, height*0.5, { isStatic: true, angle: 0.12, render: { fillStyle: '#d4c4a8' } }),
+  Bodies.rectangle(width-40, height*0.45, 12, height*0.5, { isStatic: true, angle: -0.12, render: { fillStyle: '#d4c4a8' } })
 ]);
 
 const bumperPositions = [
@@ -146,7 +146,7 @@ bumperPositions.forEach(([x, y]) => {
     isStatic: true,
     restitution: 1.45,
     label: 'bumper',
-    render: { fillStyle: '#faf8f5', strokeStyle: '#e0d8c8', lineWidth: 2 }
+    render: { fillStyle: '#b89a70', strokeStyle: '#9a8060', lineWidth: 2 }
   });
   Composite.add(world, bumper);
 });
@@ -157,11 +157,11 @@ function createFlipper(x, y, isLeft) {
     restitution: 0.55,
     friction: 0.08,
     label: isLeft ? 'left' : 'right',
-    render: { fillStyle: '#f5f0e8', strokeStyle: '#d8d0c0', lineWidth: 1.5 }
+    render: { fillStyle: '#d4c4a8', strokeStyle: '#b8a890', lineWidth: 2 }
   });
   const pivot = Bodies.circle(isLeft ? x - 48 : x + 48, y, 6, { 
     isStatic: true, 
-    render: { fillStyle: '#e8e0d0' } 
+    render: { fillStyle: '#c4b498' } 
   });
   const constraint = Constraint.create({
     bodyA: flipper,
@@ -189,7 +189,7 @@ function createBall() {
     friction: 0.008,
     density: 0.0011,
     label: 'ball',
-    render: { fillStyle: '#ffffff', strokeStyle: '#f0ebe3', lineWidth: 1 }
+    render: { fillStyle: '#2c2c2c', strokeStyle: '#1a1a1a', lineWidth: 1 }
   });
   Composite.add(world, ball);
   launched = false;
@@ -199,7 +199,7 @@ createBall();
 
 Composite.add(world, Bodies.rectangle(width - 28, height - 36, 16, 50, {
   isStatic: true,
-  render: { fillStyle: '#e8e0d0' }
+  render: { fillStyle: '#c4b498' }
 }));
 
 function launchBall() {
@@ -250,7 +250,7 @@ Events.on(engine, 'collisionStart', (event) => {
       document.getElementById('score').textContent = score;
       const bumper = pair.bodyA.label === 'bumper' ? pair.bodyA : pair.bodyB;
       const orig = bumper.render.fillStyle;
-      bumper.render.fillStyle = '#fffef8';
+      bumper.render.fillStyle = '#d4c4a8';
       setTimeout(() => bumper.render.fillStyle = orig, 120);
     }
     if (labels.includes('ball') && labels.includes('drain')) {

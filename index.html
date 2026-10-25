@@ -216,13 +216,19 @@ function updateFlippers() {
   Body.setAngularVelocity(rightFlipper, rightDown ? 0.38 : -0.18);
 }
 
-document.getElementById('left').addEventListener('pointerdown', () => leftDown = true);
-document.getElementById('left').addEventListener('pointerup', () => leftDown = false);
+document.getElementById('left').addEventListener('pointerdown', (e) => { e.preventDefault(); leftDown = true; });
+document.getElementById('left').addEventListener('pointerup', (e) => { e.preventDefault(); leftDown = false; });
 document.getElementById('left').addEventListener('pointerleave', () => leftDown = false);
-document.getElementById('right').addEventListener('pointerdown', () => rightDown = true);
-document.getElementById('right').addEventListener('pointerup', () => rightDown = false);
+document.getElementById('left').addEventListener('pointercancel', () => leftDown = false);
+
+document.getElementById('right').addEventListener('pointerdown', (e) => { e.preventDefault(); rightDown = true; });
+document.getElementById('right').addEventListener('pointerup', (e) => { e.preventDefault(); rightDown = false; });
 document.getElementById('right').addEventListener('pointerleave', () => rightDown = false);
-document.getElementById('launch').addEventListener('click', launchBall);
+document.getElementById('right').addEventListener('pointercancel', () => rightDown = false);
+document.getElementById('launch').addEventListener('pointerdown', (e) => {
+  e.preventDefault();
+  launchBall();
+});
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') leftDown = true;

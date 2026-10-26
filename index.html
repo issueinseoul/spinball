@@ -3,142 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>백자 달항 핀볼 - Dalhangari Pinball</title>
+<title>백자 달항 핀볼</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap');
-  body { margin:0; padding:0; background:#f5f0e8; color:#3a3a3a; font-family:'Noto Serif KR',serif; display:flex; flex-direction:column; align-items:center; overflow:hidden; touch-action:none; }
-  #ui { position:absolute; top:12px; left:16px; z-index:10; font-size:16px; background:rgba(255,255,255,0.7); padding:6px 12px; border-radius:20px; border:1px solid #d4cfc4; }
-  #controls { position:absolute; bottom:16px; width:100%; display:flex; justify-content:space-around; z-index:10; }
-  button { background:linear-gradient(145deg,#f8f4ee,#e8e0d0); color:#4a4038; border:1px solid #c9c0b0; padding:12px 22px; font-size:15px; border-radius:12px; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.08); }
-  button:active { background:#f0e8d8; transform:scale(0.98); }
-  #game-over { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(255,250,245,0.95); padding:28px; border-radius:16px; text-align:center; display:none; border:1px solid #d4cfc4; box-shadow:0 8px 24px rgba(0,0,0,0.12); }
-  canvas { border:3px solid #c4b498; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.06); }
-  .title { position:absolute; top:8px; right:16px; font-size:14px; color:#8a7a68; letter-spacing:1px; }
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap');
+body{margin:0;padding:0;background:#f5f0e8;color:#3a3a3a;font-family:'Noto Serif KR',serif;display:flex;flex-direction:column;align-items:center;overflow:hidden;touch-action:none}
+#ui{position:absolute;top:12px;left:16px;z-index:10;font-size:16px;background:rgba(255,255,255,.7);padding:6px 12px;border-radius:20px;border:1px solid #d4cfc4}
+#controls{position:absolute;bottom:16px;width:100%;display:flex;justify-content:space-around;z-index:10}
+button{background:linear-gradient(145deg,#f8f4ee,#e8e0d0);color:#4a4038;border:1px solid #c9c0b0;padding:12px 22px;font-size:15px;border-radius:12px;cursor:pointer}
+canvas{border:3px solid #c4b498;border-radius:12px}
+.title{position:absolute;top:8px;right:16px;font-size:14px;color:#8a7a68}
+#game-over{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,250,245,.95);padding:28px;border-radius:16px;text-align:center;display:none}
 </style>
 </head>
 <body>
 <div class="title">백자 달항 핀볼</div>
 <div id="ui">점수: <span id="score">0</span> | 공: <span id="balls">3</span></div>
 <canvas id="canvas"></canvas>
-<div id="controls">
-  <button id="left">◀ 왼쪽</button>
-  <button id="launch">발사</button>
-  <button id="right">오른쪽 ▶</button>
-</div>
-<div id="game-over">
-  <h2>게임 오버</h2>
-  <p>최종 점수: <span id="final-score">0</span></p>
-  <button onclick="location.reload()">다시 시작</button>
-</div>
+<div id="controls"><button id="left">◀ 왼쪽</button><button id="launch">발사</button><button id="right">오른쪽 ▶</button></div>
+<div id="game-over"><h2>게임 오버</h2><p>최종 점수: <span id="final-score">0</span></p><button onclick="location.reload()">다시 시작</button></div>
 <script>
-const { Engine, Render, Runner, Bodies, Body, Composite, Events, Constraint } = Matter;
-const canvas = document.getElementById('canvas');
-const width = Math.min(window.innerWidth - 24, 480);
-const height = Math.min(window.innerHeight - 140, 760);
-canvas.width = width; canvas.height = height;
-const engine = Engine.create();
-const world = engine.world;
-world.gravity.y = 1.15;
-const render = Render.create({ canvas, engine, options: { width, height, wireframes: false, background: '#e8dfd0', showVelocity: false } });
-Render.run(render);
-const runner = Runner.create();
-Runner.run(runner, engine);
-
-// Outer walls
-Composite.add(world, [
-  Bodies.rectangle(width/2, -10, width+40, 20, { isStatic: true, render: { fillStyle: '#c4b498' } }),
-  Bodies.rectangle(width/2, height+10, width+40, 20, { isStatic: true, label: 'drain', render: { fillStyle: '#a89880' } }),
-  Bodies.rectangle(-10, height/2, 20, height+40, { isStatic: true, render: { fillStyle: '#c4b498' } }),
-  Bodies.rectangle(width+10, height/2, 20, height+40, { isStatic: true, render: { fillStyle: '#c4b498' } })
+const {Engine,Render,Runner,Bodies,Body,Composite,Events,Constraint}=Matter;
+const canvas=document.getElementById('canvas');
+const width=Math.min(window.innerWidth-24,480);
+const height=Math.min(window.innerHeight-140,760);
+canvas.width=width;canvas.height=height;
+const engine=Engine.create();const world=engine.world;world.gravity.y=1.15;
+const render=Render.create({canvas,engine,options:{width,height,wireframes:false,background:'#e8dfd0'}});
+Render.run(render);const runner=Runner.create();Runner.run(runner,engine);
+Composite.add(world,[
+Bodies.rectangle(width/2,-10,width+40,20,{isStatic:true,render:{fillStyle:'#c4b498'}}),
+Bodies.rectangle(width/2,height+10,width+40,20,{isStatic:true,label:'drain',render:{fillStyle:'#a89880'}}),
+Bodies.rectangle(-10,height/2,20,height+40,{isStatic:true,render:{fillStyle:'#c4b498'}}),
+Bodies.rectangle(width+10,height/2,20,height+40,{isStatic:true,render:{fillStyle:'#c4b498'}})
 ]);
-
-// Right launch lane
-Composite.add(world, [
-  Bodies.rectangle(width - 22, height * 0.55, 10, height * 0.75, { isStatic: true, render: { fillStyle: '#d4c4a8' } }),
-  Bodies.rectangle(width * 0.75, 60, width * 0.5, 12, { isStatic: true, angle: -0.25, render: { fillStyle: '#d4c4a8' } })
+// Launch chute
+Composite.add(world,[
+Bodies.rectangle(width-18,height*0.62,8,height*0.7,{isStatic:true,render:{fillStyle:'#d4c4a8'}}),
+Bodies.rectangle(width-42,height*0.35,8,height*0.4,{isStatic:true,angle:0.15,render:{fillStyle:'#d4c4a8'}})
 ]);
-
-// Left return guide
-Composite.add(world, [
-  Bodies.rectangle(28, height * 0.4, 10, height * 0.55, { isStatic: true, angle: 0.08, render: { fillStyle: '#d4c4a8' } }),
-  Bodies.rectangle(width * 0.3, 80, width * 0.45, 12, { isStatic: true, angle: 0.35, render: { fillStyle: '#d4c4a8' } })
+// Upper ramp
+Composite.add(world,[
+Bodies.rectangle(width*0.68,50,width*0.55,10,{isStatic:true,angle:-0.22,render:{fillStyle:'#d4c4a8'}}),
+Bodies.rectangle(width*0.38,90,width*0.4,10,{isStatic:true,angle:0.18,render:{fillStyle:'#d4c4a8'}})
 ]);
-
-// Bottom side rails
-Composite.add(world, [
-  Bodies.rectangle(width * 0.18, height - 110, 14, 80, { isStatic: true, angle: 0.4, render: { fillStyle: '#c4b498' } }),
-  Bodies.rectangle(width * 0.82, height - 110, 14, 80, { isStatic: true, angle: -0.4, render: { fillStyle: '#c4b498' } })
+// Left return
+Composite.add(world,Bodies.rectangle(22,height*0.42,8,height*0.5,{isStatic:true,angle:0.06,render:{fillStyle:'#d4c4a8'}}));
+// Side rails
+Composite.add(world,[
+Bodies.rectangle(width*0.15,height-100,12,70,{isStatic:true,angle:0.45,render:{fillStyle:'#c4b498'}}),
+Bodies.rectangle(width*0.85,height-100,12,70,{isStatic:true,angle:-0.45,render:{fillStyle:'#c4b498'}})
 ]);
-
-// Upper bumpers
-[[width*0.35,160],[width*0.65,160],[width*0.5,240],[width*0.28,340],[width*0.72,340]].forEach(([x,y]) => {
-  Composite.add(world, Bodies.circle(x, y, 20, { isStatic: true, restitution: 1.5, label: 'bumper', render: { fillStyle: '#b89a70', strokeStyle: '#9a8060', lineWidth: 2 } }));
+// Attack bumpers
+[[width*0.42,170],[width*0.58,170],[width*0.35,230],[width*0.5,210],[width*0.65,230]].forEach(([x,y])=>{
+Composite.add(world,Bodies.circle(x,y,18,{isStatic:true,restitution:1.55,label:'bumper',render:{fillStyle:'#b89a70',strokeStyle:'#8a7050',lineWidth:2}}));
 });
-
-function createFlipper(x, y, isLeft) {
-  const flipper = Bodies.rectangle(x, y, 110, 18, { density: 0.0022, restitution: 0.55, friction: 0.08, label: isLeft ? 'left' : 'right', render: { fillStyle: '#d4c4a8', strokeStyle: '#b8a890', lineWidth: 2 } });
-  const pivot = Bodies.circle(isLeft ? x - 48 : x + 48, y, 6, { isStatic: true, render: { fillStyle: '#c4b498' } });
-  const constraint = Constraint.create({ bodyA: flipper, pointA: { x: isLeft ? -48 : 48, y: 0 }, bodyB: pivot, length: 0, stiffness: 1 });
-  Composite.add(world, [flipper, pivot, constraint]);
-  return flipper;
+// Re-entry lanes
+for(let i=0;i<3;i++)Composite.add(world,Bodies.rectangle(width*0.28+i*55,130,8,40,{isStatic:true,render:{fillStyle:'#c9b898'}}));
+function createFlipper(x,y,isLeft){
+const flipper=Bodies.rectangle(x,y,110,18,{density:0.0022,restitution:0.55,friction:0.08,label:isLeft?'left':'right',render:{fillStyle:'#d4c4a8',strokeStyle:'#b8a890',lineWidth:2}});
+const pivot=Bodies.circle(isLeft?x-48:x+48,y,6,{isStatic:true,render:{fillStyle:'#c4b498'}});
+const c=Constraint.create({bodyA:flipper,pointA:{x:isLeft?-48:48,y:0},bodyB:pivot,length:0,stiffness:1});
+Composite.add(world,[flipper,pivot,c]);return flipper;
 }
-const leftFlipper = createFlipper(width * 0.32, height - 70, true);
-const rightFlipper = createFlipper(width * 0.68, height - 70, false);
-
-let ball, ballsLeft = 3, score = 0, launched = false;
-function createBall() {
-  if (ball) Composite.remove(world, ball);
-  ball = Bodies.circle(width - 18, height - 120, 10, { restitution: 0.82, friction: 0.008, density: 0.0011, label: 'ball', render: { fillStyle: '#2c2c2c', strokeStyle: '#1a1a1a', lineWidth: 1 } });
-  Composite.add(world, ball);
-  launched = false;
+const leftFlipper=createFlipper(width*0.32,height-70,true);
+const rightFlipper=createFlipper(width*0.68,height-70,false);
+let ball,ballsLeft=3,score=0,launched=false;
+function createBall(){
+if(ball)Composite.remove(world,ball);
+ball=Bodies.circle(width-18,height-120,10,{restitution:0.82,friction:0.008,density:0.0011,label:'ball',render:{fillStyle:'#2c2c2c'}});
+Composite.add(world,ball);launched=false;
 }
 createBall();
-Composite.add(world, Bodies.rectangle(width - 28, height - 36, 16, 50, { isStatic: true, render: { fillStyle: '#c4b498' } }));
-
-function launchBall() { if (!launched && ballsLeft > 0) { Body.setVelocity(ball, { x: -0.3, y: -30 }); launched = true; } }
-let leftDown = false, rightDown = false;
-function updateFlippers() {
-  Body.setAngularVelocity(leftFlipper, leftDown ? -0.38 : 0.18);
-  Body.setAngularVelocity(rightFlipper, rightDown ? 0.38 : -0.18);
+Composite.add(world,Bodies.rectangle(width-28,height-36,16,50,{isStatic:true,render:{fillStyle:'#c4b498'}}));
+function launchBall(){if(!launched&&ballsLeft>0){Body.setVelocity(ball,{x:-0.3,y:-32});launched=true;}}
+let leftDown=false,rightDown=false;
+function updateFlippers(){
+Body.setAngularVelocity(leftFlipper,leftDown?-0.4:0.2);
+Body.setAngularVelocity(rightFlipper,rightDown?0.4:-0.2);
 }
-['left','right'].forEach(id => {
-  const el = document.getElementById(id);
-  el.addEventListener('pointerdown', e => { e.preventDefault(); if(id==='left') leftDown=true; else rightDown=true; });
-  el.addEventListener('pointerup', e => { e.preventDefault(); if(id==='left') leftDown=false; else rightDown=false; });
-  el.addEventListener('pointerleave', () => { if(id==='left') leftDown=false; else rightDown=false; });
-  el.addEventListener('pointercancel', () => { if(id==='left') leftDown=false; else rightDown=false; });
+['left','right'].forEach(id=>{
+const el=document.getElementById(id);
+el.addEventListener('pointerdown',e=>{e.preventDefault();if(id==='left')leftDown=true;else rightDown=true;});
+el.addEventListener('pointerup',e=>{e.preventDefault();if(id==='left')leftDown=false;else rightDown=false;});
+el.addEventListener('pointerleave',()=>{if(id==='left')leftDown=false;else rightDown=false;});
+el.addEventListener('pointercancel',()=>{if(id==='left')leftDown=false;else rightDown=false;});
 });
-document.getElementById('launch').addEventListener('pointerdown', e => { e.preventDefault(); launchBall(); });
-document.addEventListener('keydown', e => {
-  if (e.key==='ArrowLeft'||e.key==='a'||e.key==='A') leftDown=true;
-  if (e.key==='ArrowRight'||e.key==='d'||e.key==='D') rightDown=true;
-  if (e.key===' ') { e.preventDefault(); launchBall(); }
+document.getElementById('launch').addEventListener('pointerdown',e=>{e.preventDefault();launchBall();});
+document.addEventListener('keydown',e=>{
+if(e.key==='ArrowLeft'||e.key==='a')leftDown=true;
+if(e.key==='ArrowRight'||e.key==='d')rightDown=true;
+if(e.key===' '){e.preventDefault();launchBall();}
 });
-document.addEventListener('keyup', e => {
-  if (e.key==='ArrowLeft'||e.key==='a'||e.key==='A') leftDown=false;
-  if (e.key==='ArrowRight'||e.key==='d'||e.key==='D') rightDown=false;
+document.addEventListener('keyup',e=>{
+if(e.key==='ArrowLeft'||e.key==='a')leftDown=false;
+if(e.key==='ArrowRight'||e.key==='d')rightDown=false;
 });
-Events.on(engine, 'beforeUpdate', updateFlippers);
-Events.on(engine, 'collisionStart', event => {
-  event.pairs.forEach(pair => {
-    const labels = [pair.bodyA.label, pair.bodyB.label];
-    if (labels.includes('ball') && labels.includes('bumper')) {
-      score += 100;
-      document.getElementById('score').textContent = score;
-    }
-    if (labels.includes('ball') && labels.includes('drain')) {
-      ballsLeft--;
-      document.getElementById('balls').textContent = ballsLeft;
-      if (ballsLeft <= 0) {
-        document.getElementById('final-score').textContent = score;
-        document.getElementById('game-over').style.display = 'block';
-        Runner.stop(runner);
-      } else setTimeout(createBall, 600);
-    }
-  });
+Events.on(engine,'beforeUpdate',updateFlippers);
+Events.on(engine,'collisionStart',e=>{
+e.pairs.forEach(p=>{
+const l=[p.bodyA.label,p.bodyB.label];
+if(l.includes('ball')&&l.includes('bumper')){score+=150;document.getElementById('score').textContent=score;}
+if(l.includes('ball')&&l.includes('drain')){
+ballsLeft--;document.getElementById('balls').textContent=ballsLeft;
+if(ballsLeft<=0){document.getElementById('final-score').textContent=score;document.getElementById('game-over').style.display='block';Runner.stop(runner);}else setTimeout(createBall,600);
+}
 });
-window.addEventListener('resize', () => location.reload());
+});
+window.addEventListener('resize',()=>location.reload());
 </script>
 </body>
 </html>

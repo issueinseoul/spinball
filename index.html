@@ -7,80 +7,75 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap');
-body{margin:0;padding:0;background:#f5f0e8;color:#3a3a3a;font-family:'Noto Serif KR',serif;display:flex;flex-direction:column;align-items:center;overflow:hidden;touch-action:none}
-#ui{position:absolute;top:12px;left:16px;z-index:10;font-size:16px;background:rgba(255,255,255,.7);padding:6px 12px;border-radius:20px;border:1px solid #d4cfc4}
-#controls{position:absolute;bottom:16px;width:100%;display:flex;justify-content:space-around;z-index:10}
-button{background:linear-gradient(145deg,#f8f4ee,#e8e0d0);color:#4a4038;border:1px solid #c9c0b0;padding:12px 22px;font-size:15px;border-radius:12px;cursor:pointer}
-canvas{border:3px solid #c4b498;border-radius:12px}
-.title{position:absolute;top:8px;right:16px;font-size:14px;color:#8a7a68}
-#game-over{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,250,245,.95);padding:28px;border-radius:16px;text-align:center;display:none}
+body{margin:0;padding:0;background:#1a1612;color:#f5f0e8;font-family:'Noto Serif KR',serif;display:flex;flex-direction:column;align-items:center;overflow:hidden;touch-action:none}
+#ui{position:absolute;top:10px;left:12px;z-index:10;font-size:15px;background:rgba(30,25,20,.75);padding:6px 12px;border-radius:16px;border:1px solid #8a7a60}
+#controls{position:absolute;bottom:12px;width:100%;display:flex;justify-content:space-around;z-index:10}
+button{background:linear-gradient(145deg,#e8dcc8,#c4b498);color:#2a241c;border:none;padding:14px 26px;font-size:16px;border-radius:12px;cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,.3)}
+button:active{transform:scale(.96)}
+#game-over{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(20,16,12,.92);padding:28px;border-radius:16px;text-align:center;display:none;border:1px solid #c4b498}
+canvas{border:4px solid #c4b498;border-radius:10px;box-shadow:0 0 20px rgba(196,180,152,.3)}
+.title{position:absolute;top:10px;right:14px;font-size:13px;color:#c4b498;letter-spacing:1px}
 </style>
 </head>
 <body>
 <div class="title">백자 달항 핀볼</div>
-<div id="ui">점수: <span id="score">0</span> | 공: <span id="balls">3</span></div>
+<div id="ui">점수: <span id="score">0</span> &nbsp;|&nbsp; 공: <span id="balls">3</span></div>
 <canvas id="canvas"></canvas>
 <div id="controls"><button id="left">◀ 왼쪽</button><button id="launch">발사</button><button id="right">오른쪽 ▶</button></div>
 <div id="game-over"><h2>게임 오버</h2><p>최종 점수: <span id="final-score">0</span></p><button onclick="location.reload()">다시 시작</button></div>
 <script>
 const {Engine,Render,Runner,Bodies,Body,Composite,Events,Constraint}=Matter;
 const canvas=document.getElementById('canvas');
-const width=Math.min(window.innerWidth-24,480);
-const height=Math.min(window.innerHeight-140,760);
+const width=Math.min(window.innerWidth-20,460);
+const height=Math.min(window.innerHeight-130,720);
 canvas.width=width;canvas.height=height;
-const engine=Engine.create();const world=engine.world;world.gravity.y=1.15;
-const render=Render.create({canvas,engine,options:{width,height,wireframes:false,background:'#e8dfd0'}});
+const engine=Engine.create();const world=engine.world;world.gravity.y=1.1;
+const render=Render.create({canvas,engine,options:{width,height,wireframes:false,background:'#2a241c'}});
 Render.run(render);const runner=Runner.create();Runner.run(runner,engine);
 Composite.add(world,[
-Bodies.rectangle(width/2,-10,width+40,20,{isStatic:true,render:{fillStyle:'#c4b498'}}),
-Bodies.rectangle(width/2,height+10,width+40,20,{isStatic:true,label:'drain',render:{fillStyle:'#a89880'}}),
-Bodies.rectangle(-10,height/2,20,height+40,{isStatic:true,render:{fillStyle:'#c4b498'}}),
-Bodies.rectangle(width+10,height/2,20,height+40,{isStatic:true,render:{fillStyle:'#c4b498'}})
+Bodies.rectangle(width/2,-8,width+30,16,{isStatic:true,render:{fillStyle:'#c4b498'}}),
+Bodies.rectangle(width/2,height+8,width+30,16,{isStatic:true,label:'drain',render:{fillStyle:'#5a4a3a'}}),
+Bodies.rectangle(-8,height/2,16,height+30,{isStatic:true,render:{fillStyle:'#c4b498'}}),
+Bodies.rectangle(width+8,height/2,16,height+30,{isStatic:true,render:{fillStyle:'#c4b498'}})
 ]);
-// Launch chute
 Composite.add(world,[
-Bodies.rectangle(width-18,height*0.62,8,height*0.7,{isStatic:true,render:{fillStyle:'#d4c4a8'}}),
-Bodies.rectangle(width-42,height*0.35,8,height*0.4,{isStatic:true,angle:0.15,render:{fillStyle:'#d4c4a8'}})
+Bodies.rectangle(width-16,height*0.58,7,height*0.72,{isStatic:true,render:{fillStyle:'#e8dcc8'}}),
+Bodies.rectangle(width-38,height*0.32,7,height*0.38,{isStatic:true,angle:0.18,render:{fillStyle:'#e8dcc8'}})
 ]);
-// Upper ramp
 Composite.add(world,[
-Bodies.rectangle(width*0.68,50,width*0.55,10,{isStatic:true,angle:-0.22,render:{fillStyle:'#d4c4a8'}}),
-Bodies.rectangle(width*0.38,90,width*0.4,10,{isStatic:true,angle:0.18,render:{fillStyle:'#d4c4a8'}})
+Bodies.rectangle(width*0.72,42,width*0.52,9,{isStatic:true,angle:-0.2,render:{fillStyle:'#e8dcc8'}}),
+Bodies.rectangle(width*0.35,78,width*0.42,9,{isStatic:true,angle:0.15,render:{fillStyle:'#e8dcc8'}})
 ]);
-// Left return
-Composite.add(world,Bodies.rectangle(22,height*0.42,8,height*0.5,{isStatic:true,angle:0.06,render:{fillStyle:'#d4c4a8'}}));
-// Side rails
+Composite.add(world,Bodies.rectangle(18,height*0.4,7,height*0.48,{isStatic:true,angle:0.05,render:{fillStyle:'#e8dcc8'}}));
 Composite.add(world,[
-Bodies.rectangle(width*0.15,height-100,12,70,{isStatic:true,angle:0.45,render:{fillStyle:'#c4b498'}}),
-Bodies.rectangle(width*0.85,height-100,12,70,{isStatic:true,angle:-0.45,render:{fillStyle:'#c4b498'}})
+Bodies.rectangle(width*0.14,height-95,11,65,{isStatic:true,angle:0.42,render:{fillStyle:'#c4b498'}}),
+Bodies.rectangle(width*0.86,height-95,11,65,{isStatic:true,angle:-0.42,render:{fillStyle:'#c4b498'}})
 ]);
-// Attack bumpers
-[[width*0.42,170],[width*0.58,170],[width*0.35,230],[width*0.5,210],[width*0.65,230]].forEach(([x,y])=>{
-Composite.add(world,Bodies.circle(x,y,18,{isStatic:true,restitution:1.55,label:'bumper',render:{fillStyle:'#b89a70',strokeStyle:'#8a7050',lineWidth:2}}));
+[[width*0.4,155],[width*0.6,155],[width*0.32,215],[width*0.5,195],[width*0.68,215]].forEach(([x,y])=>{
+Composite.add(world,Bodies.circle(x,y,17,{isStatic:true,restitution:1.6,label:'bumper',render:{fillStyle:'#f0e6d0',strokeStyle:'#b89a70',lineWidth:2}}));
 });
-// Re-entry lanes
-for(let i=0;i<3;i++)Composite.add(world,Bodies.rectangle(width*0.28+i*55,130,8,40,{isStatic:true,render:{fillStyle:'#c9b898'}}));
+for(let i=0;i<3;i++)Composite.add(world,Bodies.rectangle(width*0.26+i*52,118,6,36,{isStatic:true,render:{fillStyle:'#d4c4a8'}}));
 function createFlipper(x,y,isLeft){
-const flipper=Bodies.rectangle(x,y,110,18,{density:0.0022,restitution:0.55,friction:0.08,label:isLeft?'left':'right',render:{fillStyle:'#d4c4a8',strokeStyle:'#b8a890',lineWidth:2}});
-const pivot=Bodies.circle(isLeft?x-48:x+48,y,6,{isStatic:true,render:{fillStyle:'#c4b498'}});
-const c=Constraint.create({bodyA:flipper,pointA:{x:isLeft?-48:48,y:0},bodyB:pivot,length:0,stiffness:1});
+const flipper=Bodies.rectangle(x,y,105,16,{density:0.002,restitution:0.6,friction:0.05,label:isLeft?'left':'right',render:{fillStyle:'#f5efe0',strokeStyle:'#c4b498',lineWidth:1.5}});
+const pivot=Bodies.circle(isLeft?x-45:x+45,y,5,{isStatic:true,render:{fillStyle:'#c4b498'}});
+const c=Constraint.create({bodyA:flipper,pointA:{x:isLeft?-45:45,y:0},bodyB:pivot,length:0,stiffness:1});
 Composite.add(world,[flipper,pivot,c]);return flipper;
 }
-const leftFlipper=createFlipper(width*0.32,height-70,true);
-const rightFlipper=createFlipper(width*0.68,height-70,false);
+const leftFlipper=createFlipper(width*0.3,height-65,true);
+const rightFlipper=createFlipper(width*0.7,height-65,false);
 let ball,ballsLeft=3,score=0,launched=false;
 function createBall(){
 if(ball)Composite.remove(world,ball);
-ball=Bodies.circle(width-18,height-120,10,{restitution:0.82,friction:0.008,density:0.0011,label:'ball',render:{fillStyle:'#2c2c2c'}});
+ball=Bodies.circle(width-16,height-110,9,{restitution:0.85,friction:0.005,density:0.001,label:'ball',render:{fillStyle:'#ffffff',strokeStyle:'#e8dcc8',lineWidth:1}});
 Composite.add(world,ball);launched=false;
 }
 createBall();
-Composite.add(world,Bodies.rectangle(width-28,height-36,16,50,{isStatic:true,render:{fillStyle:'#c4b498'}}));
-function launchBall(){if(!launched&&ballsLeft>0){Body.setVelocity(ball,{x:-0.3,y:-32});launched=true;}}
+Composite.add(world,Bodies.rectangle(width-26,height-32,14,45,{isStatic:true,render:{fillStyle:'#c4b498'}}));
+function launchBall(){if(!launched&&ballsLeft>0){Body.setVelocity(ball,{x:-0.4,y:-34});launched=true;}}
 let leftDown=false,rightDown=false;
 function updateFlippers(){
-Body.setAngularVelocity(leftFlipper,leftDown?-0.4:0.2);
-Body.setAngularVelocity(rightFlipper,rightDown?0.4:-0.2);
+Body.setAngularVelocity(leftFlipper,leftDown?-0.42:0.22);
+Body.setAngularVelocity(rightFlipper,rightDown?0.42:-0.22);
 }
 ['left','right'].forEach(id=>{
 const el=document.getElementById(id);
@@ -91,13 +86,13 @@ el.addEventListener('pointercancel',()=>{if(id==='left')leftDown=false;else righ
 });
 document.getElementById('launch').addEventListener('pointerdown',e=>{e.preventDefault();launchBall();});
 document.addEventListener('keydown',e=>{
-if(e.key==='ArrowLeft'||e.key==='a')leftDown=true;
-if(e.key==='ArrowRight'||e.key==='d')rightDown=true;
+if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')leftDown=true;
+if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')rightDown=true;
 if(e.key===' '){e.preventDefault();launchBall();}
 });
 document.addEventListener('keyup',e=>{
-if(e.key==='ArrowLeft'||e.key==='a')leftDown=false;
-if(e.key==='ArrowRight'||e.key==='d')rightDown=false;
+if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')leftDown=false;
+if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')rightDown=false;
 });
 Events.on(engine,'beforeUpdate',updateFlippers);
 Events.on(engine,'collisionStart',e=>{
@@ -106,7 +101,7 @@ const l=[p.bodyA.label,p.bodyB.label];
 if(l.includes('ball')&&l.includes('bumper')){score+=150;document.getElementById('score').textContent=score;}
 if(l.includes('ball')&&l.includes('drain')){
 ballsLeft--;document.getElementById('balls').textContent=ballsLeft;
-if(ballsLeft<=0){document.getElementById('final-score').textContent=score;document.getElementById('game-over').style.display='block';Runner.stop(runner);}else setTimeout(createBall,600);
+if(ballsLeft<=0){document.getElementById('final-score').textContent=score;document.getElementById('game-over').style.display='block';Runner.stop(runner);}else setTimeout(createBall,500);
 }
 });
 });
